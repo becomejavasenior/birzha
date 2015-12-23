@@ -32,7 +32,7 @@ public class RegistrationServlet extends HttpServlet {
 	FactoryDao factory = new FactoryDaoImpl();;
 	private ServletConfig config;  
 	private ServletContext sc;
-	static Logger logger=Logger.getLogger(RegistrationServlet.class);
+	private static final Logger logger=Logger.getLogger(RegistrationServlet.class);
 
     
 	public void init(ServletConfig config) throws ServletException {

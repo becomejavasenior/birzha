@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 
 
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
@@ -20,15 +19,15 @@ public class UserDaoImpl implements UserDao {
 		
 		private Connection connection = null; 
 		private FactoryDao factory = new FactoryDaoImpl();
-		private static Logger logger=Logger.getLogger(UserDaoImpl.class); 
+		private static final Logger logger=Logger.getLogger(UserDaoImpl.class); 
 		
 
 
 		public boolean create(User user) {
 			
 			PreparedStatement pst=null;
-			//id,nickname,email,password, regdate, phone, finpassword, status
-			String query = "insert users values(0,?,?,?,default,?,default,default)";
+			//id,nickname,email,password, regdate, phone, finpassword, status, ipaddress
+			String query = "insert users values(0,?,?,?,default,?,default,default,null)";
 			try {
 				connection = factory.getConnection();
 				pst = connection.prepareStatement(query);
@@ -39,7 +38,7 @@ public class UserDaoImpl implements UserDao {
 				pst.execute();
 				return true;
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				return false;
 			}
 			finally {
@@ -49,7 +48,7 @@ public class UserDaoImpl implements UserDao {
 					}					
 					factory.closeConnection(connection);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(),e);
 				}
 			}
 		} 
@@ -83,8 +82,7 @@ public class UserDaoImpl implements UserDao {
 				}
 							
 			} catch (SQLException e) {
-				logger.error("Auth query wasn't run");
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				return -1;
 			} 
 			
@@ -95,7 +93,7 @@ public class UserDaoImpl implements UserDao {
 					}
 					factory.closeConnection(connection);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(),e);
 				}
 				
 			}
@@ -121,8 +119,7 @@ public class UserDaoImpl implements UserDao {
 				}
 							
 			} catch (SQLException e) {
-				logger.error("ifNicknameIsUnique query wasn't run");
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				return false;
 			} 
 			
@@ -133,7 +130,7 @@ public class UserDaoImpl implements UserDao {
 					}
 					factory.closeConnection(connection);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(),e);
 				}
 				
 			}
@@ -159,8 +156,7 @@ public class UserDaoImpl implements UserDao {
 				}
 							
 			} catch (SQLException e) {
-				logger.error("ifPhoneIsUnique query wasn't run");
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				return false;
 			} 
 			
@@ -171,7 +167,7 @@ public class UserDaoImpl implements UserDao {
 					}
 					factory.closeConnection(connection);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(),e);
 				}
 				
 			}
@@ -197,8 +193,7 @@ public class UserDaoImpl implements UserDao {
 				}
 							
 			} catch (SQLException e) {
-				logger.error("ifEmailIsUnique query wasn't run");
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				return false;
 			} 
 			
@@ -209,7 +204,7 @@ public class UserDaoImpl implements UserDao {
 					}
 					factory.closeConnection(connection);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(),e);
 				}
 				
 			}
@@ -235,8 +230,7 @@ public class UserDaoImpl implements UserDao {
 				}
 							
 			} catch (SQLException e) {
-				logger.error("ifEmailIsUnique query wasn't run");
-				e.printStackTrace();
+				logger.error(e.getMessage(),e);
 				return null;
 			} 
 			
@@ -247,11 +241,82 @@ public class UserDaoImpl implements UserDao {
 					}
 					factory.closeConnection(connection);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(),e);
 				}
 				
 			}
 			
+		}
+
+
+
+		public String getIP(String email, String host) {
+			PreparedStatement pst=null;
+			String query = "SELECT ipaddress FROM users WHERE email = ?;";
+			try {
+				connection = factory.getConnection();
+				pst = connection.prepareStatement(query);
+				pst.setString(1, email); 
+				ResultSet rs = pst.executeQuery(); 
+				if (rs.next()) {
+					String ip = rs.getString("ipaddress");
+					if(ip == null) {
+						setIP(email, host);
+						return null;
+					}
+					else return ip;
+
+				}
+				else {
+					return null;
+				}
+							
+			} catch (SQLException e) {
+				logger.error(e.getMessage(),e);
+				return null;
+			} 
+			
+			finally {
+				try {
+					if (pst != null) {
+						pst.close();
+					}
+					factory.closeConnection(connection);
+				} catch (SQLException e) {
+					logger.error(e.getMessage(),e);
+				}
+				
+			}
+		} 
+		
+		public void setIP(String email, String ip) {
+			PreparedStatement pst=null;
+			String query = "UPDATE users SET ipaddress=? WHERE email = ?;";
+			try {
+				connection = factory.getConnection();
+				pst = connection.prepareStatement(query);
+				pst.setString(1, ip); 
+				pst.setString(2, email); 
+				int number = pst.executeUpdate();
+				if (number == 0) {
+					logger.error("couldn't update ip address");
+				}
+							
+			} catch (SQLException e) {
+				logger.error(e.getMessage(),e);
+			} 
+			
+			finally {
+				try {
+					if (pst != null) {
+						pst.close();
+					}
+					factory.closeConnection(connection);
+				} catch (SQLException e) {
+					logger.error(e.getMessage(),e);
+				}
+				
+			}
 		} 
 		
 		

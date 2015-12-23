@@ -22,11 +22,10 @@ import database.model.User;
 @WebServlet(name = "ForgetPassword", urlPatterns = { "/forgetpassword" })
 public class ForgetPassword extends HttpServlet {
 	private UserDao userdao = null;
-	private User user = new User();
 	FactoryDao factory = new FactoryDaoImpl();;
 	private ServletConfig config;  
 	private ServletContext sc;
-	static Logger logger=Logger.getLogger(RegistrationServlet.class);
+	private static final Logger logger=Logger.getLogger(RegistrationServlet.class);
 
     
 	public void init(ServletConfig config) throws ServletException {

@@ -14,7 +14,7 @@ public class LogoutServlet extends HttpServlet  {
 
 	private static final long serialVersionUID = 9079696067100512060L;
 
-	static Logger logger = Logger.getLogger(LogoutServlet.class);
+	private static final Logger logger = Logger.getLogger(LogoutServlet.class);
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -25,7 +25,7 @@ public class LogoutServlet extends HttpServlet  {
         if(session != null){
             session.invalidate();
         }
-        response.sendRedirect("logout.html");
+        response.sendRedirect("logout.jsp");
     }
  
 }

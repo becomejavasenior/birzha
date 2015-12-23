@@ -11,4 +11,11 @@ public interface FactoryDao {
 	
 	public UserDao getUserDao(); 
 	
+	public CurrencyDao getCurrencyDao(); 
+	
+	public WalletDao getWalletDao(); 
+	
+	public OrderDao getOrderDao(); 
+	
+	
 }

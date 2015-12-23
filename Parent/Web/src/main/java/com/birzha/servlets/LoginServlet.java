@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 import database.dao.FactoryDao;
 import database.dao.UserDao;
 import database.impl.FactoryDaoImpl;
@@ -30,6 +32,7 @@ public class LoginServlet extends HttpServlet {
 	private static final int LOGIN_PASS_OK=1;
 	private static final int ONLY_LOGIN_OK=0;
 	private static final int LOGIN_WRONG=-1;
+	private static final Logger logger=Logger.getLogger(LoginServlet.class);
 		
     public void init(ServletConfig config) throws ServletException {
       	this.config = config;  
@@ -42,6 +45,7 @@ public class LoginServlet extends HttpServlet {
 		String password = req.getParameter("password");
 		String errorMsg = null;
 		String email = req.getParameter("email");
+		String ip = req.getRemoteHost();
 		
 		if(password == null || password.equals("")){
 	            errorMsg = "Поле Пароль не может быть пустым";
@@ -52,29 +56,30 @@ public class LoginServlet extends HttpServlet {
         }
 	
 	    if(errorMsg != null){
-	            RequestDispatcher rd = sc.getRequestDispatcher("/login.html");
+	            RequestDispatcher rd = sc.getRequestDispatcher("/login.jsp");
 	            PrintWriter out= resp.getWriter();
 	            out.println("<font color=red>"+errorMsg+"</font>");
 	            rd.include(req, resp);
 	        }
 	    else{
 			   if (user.auth(email, password)==LOGIN_PASS_OK){
-				   //logger.info("User entered with login = "+login);
+				   logger.info("User entered: "+email);
+				   String ipaddress = user.getIP(email, ip);
 				   HttpSession session = req.getSession();
 				   session.setAttribute("email", email);
 				   session.setMaxInactiveInterval(30*60);		          
 		           resp.sendRedirect("personalpage.jsp");
 			   }
 			   else if (user.auth(email, password) == ONLY_LOGIN_OK) {
-				   //logger.error("User with login = "+login + " entered wrong password");
-				   RequestDispatcher rd = sc.getRequestDispatcher("/login.html");
+				   logger.error(email + ": wrong password");
+				   RequestDispatcher rd = sc.getRequestDispatcher("/login.jsp");
 		           PrintWriter out = resp.getWriter();
 		           out.println("<font color=red>Пароль неверный.</font>");
 		           rd.include(req, resp);
 			   }
 			   else if (user.auth(email, password) == LOGIN_WRONG) {
-				   //logger.error("User not found with login = "+login);
-				   RequestDispatcher rd = sc.getRequestDispatcher("/login.html");
+				   logger.error("not found: "+email);
+				   RequestDispatcher rd = sc.getRequestDispatcher("/login.jsp");
 		           PrintWriter out = resp.getWriter();
 		           out.println("<font color=red>Такого логина не существует.</font>");
 		           rd.include(req, resp);

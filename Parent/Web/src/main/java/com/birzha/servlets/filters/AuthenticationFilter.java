@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 @WebFilter("/AuthenticationFilter")
 public class AuthenticationFilter implements Filter{
 	
-    private Logger logger = Logger.getLogger(AuthenticationFilter.class);
+    private static final Logger logger = Logger.getLogger(AuthenticationFilter.class);
 	private ServletContext context;
 	
     public void init(FilterConfig fConfig) throws ServletException {
@@ -33,9 +33,10 @@ public class AuthenticationFilter implements Filter{
         HttpServletResponse res = (HttpServletResponse) response;
         response.setContentType("text/html; charset=cp1251");
         String uri = req.getRequestURI();
-        logger.info("Requested Resource::"+uri);
+        logger.info("Requested Resource: "+uri);
+        System.out.println("URI is "+uri);
         HttpSession session = req.getSession(false);
-       // System.out.println("session = "+ session);
+        System.out.println("session = "+ session);
         if(session == null && 
         		!(uri.endsWith("html") 
         				|| uri.contains("registration") 

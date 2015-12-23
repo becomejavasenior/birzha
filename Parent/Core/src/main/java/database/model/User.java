@@ -12,11 +12,22 @@ public class User {
 	private String password;
 	private String finpassword;
 	private Date regdate;
+	private String ip;
+	
 	
 	public User() {
 		
 	}
 
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	
 	public int getId() {
 		return id;
 	}

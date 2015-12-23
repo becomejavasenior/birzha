@@ -18,6 +18,10 @@ public interface UserDao {
 	
 	public String getPasswordByEmail(String email);
 	
+	public String getIP(String email, String host);
+	
+	public void setIP(String email, String ip);
+	
 	//public String getAuthStatus(int id);
 	
 	//public void update(User user); 
